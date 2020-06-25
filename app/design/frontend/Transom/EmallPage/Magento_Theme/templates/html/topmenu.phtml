@@ -1,0 +1,79 @@
+<?php
+/**
+ * Copyright © 2016 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+// @codingStandardsIgnoreFile
+?>
+<?php
+/**
+ * Top menu for store
+ *
+ * @see \Magento\Theme\Block\Html\Topmenu
+ */
+?>
+<?php $columnsLimit = $block->getColumnsLimit() ? : 0; ?>
+<?php $_menu = $block->getHtml('level-top', 'submenu', $columnsLimit) ?>
+<?php
+$helper = $this->helper('Hiddentechies\Pixtron\Helper\Data');
+$baseUrl = $helper->getBaseUrl();
+$ishome = $helper->getIsHome();
+$showHome = $helper->getConfigValue('pixtronsettings/navigation_settings/enable');
+$transomHelper = $this->helper('Transom\Tema\Helper\ShopTransomFunctions');
+?>
+
+<nav class="navigation" role="navigation">
+    <ul data-mage-init='{"menu":{"responsive":true, "expanded":true, "position":{"my":"left top","at":"left bottom"}}}'> 
+        <div class="e-topmenu">
+            <!--lOGOTIPO-->
+            <li class="logo-menu">
+                <a class = "level-top" href = "<?php echo $baseUrl; ?>">
+                    <img src="https://emall.com.mx/pub/media/logo/stores/1/logo-emall.png">
+                </a> 
+            </li>
+
+            <!--BARRA DE BÚSQUEDA-->
+            <?php echo $this->getLayout()->createBlock("Magento\Framework\View\Element\Template")->setTemplate("Magento_Search::form.mini.phtml")->toHtml(); ?>
+            
+            <div class="e-topmenu-options">
+                <!--CUENTA-->
+                <li class="level0 level-top">
+                    <a class="level-top" href="#">
+                        <i class="fa fa-user"></i>
+                    </a>
+                    <ul class = "level0 submenu ui-menu ui-widget ui-widget-content ui-corner-all">
+                        <li class = "level1 nav-2-1 category-item first ui-menu-item"><a href="<?php echo $baseUrl; ?>customer/account" class = "ui-corner-all"><span>Mi cuenta</span></a></li>
+                        
+                        <?php if($transomHelper->isLoggedIn()) : ?>
+                            <li class = "level1 nav-2-2 category-item ui-menu-item"><a href="<?php echo $baseUrl; ?>checkout/cart" class = "ui-corner-all"><span>Mi Carrito</span></a></li>
+                            <li class = "level1 nav-2-3 category-item last ui-menu-item"><a href="<?php echo $baseUrl; ?>customer/account/logout" class = "ui-corner-all"><span>Salir</span></a></li>
+                        <?php else: ?>
+                            <li class = "level1 nav-2-2 category-item last ui-menu-item"><a href="<?php echo $baseUrl; ?>checkout/cart" class = "ui-corner-all"><span>Mi Carrito</span></a></li>
+                        <?php endif; ?>
+
+                        <?php $_loggedin = $this->helper('Magento\Checkout\Helper\Cart')->getCart()->getCustomerSession()->isLoggedIn(); ?>
+
+                        <?php if( $_loggedin ) : ?>
+
+                            <li class="header_account_link_list">
+                                <a class= "header_account_link" href="<?php echo $this->getUrl("customer/account/logout");?>"><?php echo __('Cerrar Sesión')?></a>
+                            </li>
+
+                        <?php endif; ?>
+                    </ul>
+                </li>
+
+                <!--CARRITO-->
+                <li class="level0 level-top">
+                    <?php echo $this->getChildHtml('minicart') ?>
+                </li>
+            </div>
+        </div>
+
+
+        <!--NAVEGACIÓN-->
+        <div class="e-navbar">
+            <?php /* @escapeNotVerified */ echo $_menu; ?>
+        </div>
+    </ul>
+</nav>
