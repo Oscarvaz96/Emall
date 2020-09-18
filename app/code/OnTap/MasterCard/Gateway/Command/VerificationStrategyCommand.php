@@ -1,26 +1,33 @@
 <?php
 /**
- * Copyright (c) 2016. On Tap Networks Limited.
+ * Copyright (c) 2016-2019 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace OnTap\MasterCard\Gateway\Command;
 
+use Magento\Framework\App\State;
 use Magento\Payment\Gateway\Command;
 use Magento\Payment\Gateway\CommandInterface;
-use Magento\Payment\Gateway\ConfigInterface;
-use Magento\Sales\Model\Order\Payment;
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Payment\Gateway\Helper\ContextHelper;
 use Magento\Payment\Gateway\Helper\SubjectReader;
-use OnTap\MasterCard\Gateway\Response\ThreeDSecure\CheckHandler;
-use Magento\Framework\App\State;
+use Magento\Sales\Model\Order\Payment;
 use Magento\Vault\Model\Ui\VaultConfigProvider;
+use OnTap\MasterCard\Gateway\Response\ThreeDSecure\CheckHandler;
+use OnTap\MasterCard\Gateway\Config\ConfigInterface;
 
-/**
- * Class VerificationStrategyCommand
- * @package OnTap\MasterCard\Gateway\Command
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
 class VerificationStrategyCommand implements CommandInterface
 {
     const PROCESS_3DS_RESULT = '3ds_process';
@@ -91,14 +98,11 @@ class VerificationStrategyCommand implements CommandInterface
 
         $data = $paymentInfo->getAdditionalInformation(CheckHandler::THREEDSECURE_CHECK);
 
-        if (isset($data['status'])) {
-            if ($data['status'] == "CARD_DOES_NOT_SUPPORT_3DS") {
+        if (isset($data['veResEnrolled'])) {
+            if ($data['veResEnrolled'] == "N") {
                 return false;
             }
-            if ($data['status'] == "CARD_NOT_ENROLLED") {
-                return false;
-            }
-            if ($data['status'] == "CARD_ENROLLED") {
+            if ($data['veResEnrolled'] == "Y") {
                 return true;
             }
         }

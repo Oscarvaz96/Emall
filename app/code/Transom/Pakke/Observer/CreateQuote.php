@@ -40,7 +40,8 @@ class CreateQuote implements ObserverInterface
 
     public function execute(EventObserver $observer)
     {
-        $order = $observer->getEvent()->getOrder();
+        if ($this->configFunctions->getActivePakke() == true) {
+            $order = $observer->getEvent()->getOrder();
         // $orderItems = $order->getAllItems();
         $orderItems = $order->getAllVisibleItems();
         $body = $this->getBody($order);
@@ -91,6 +92,9 @@ class CreateQuote implements ObserverInterface
 			print($th->getMessage());
 		}
       
+        }
+
+        
     }
 
     public function getBody($order){

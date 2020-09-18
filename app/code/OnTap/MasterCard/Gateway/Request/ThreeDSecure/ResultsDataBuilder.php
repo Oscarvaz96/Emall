@@ -1,14 +1,26 @@
 <?php
 /**
- * Copyright (c) 2016. On Tap Networks Limited.
+ * Copyright (c) 2016-2019 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace OnTap\MasterCard\Gateway\Request\ThreeDSecure;
 
-use Magento\Payment\Gateway\Request\BuilderInterface;
-use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Payment\Gateway\ConfigInterface;
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
+use Magento\Payment\Gateway\Helper\SubjectReader;
+use Magento\Payment\Gateway\Request\BuilderInterface;
 use OnTap\MasterCard\Gateway\Response\ThreeDSecure\CheckHandler;
 
 class ResultsDataBuilder implements BuilderInterface
@@ -39,17 +51,16 @@ class ResultsDataBuilder implements BuilderInterface
     {
         $tdsCheck = $paymentDO->getPayment()->getAdditionalInformation(CheckHandler::THREEDSECURE_CHECK);
 
-        switch ($tdsCheck['status']) {
-            case 'CARD_ENROLLED':
+        switch ($tdsCheck['veResEnrolled']) {
+            case 'Y':
                 $status = static::ENROLLED;
                 break;
 
-            case 'CARD_NOT_ENROLLED':
+            case 'N':
                 $status = static::NOT_ENROLLED;
                 break;
 
             default:
-            case 'CARD_DOES_NOT_SUPPORT_3DS':
                 $status = static::ENROLLMENT_STATUS_UNDETERMINED;
                 break;
         }
@@ -70,16 +81,8 @@ class ResultsDataBuilder implements BuilderInterface
         }
 
         $paymentDO = SubjectReader::readPayment($buildSubject);
-        //$tdsResult = $paymentDO->getPayment()->getAdditionalInformation(ResultHandler::THREEDSECURE_RESULT);
-
         return [
             '3DSecureId' => $paymentDO->getPayment()->getAdditionalInformation('3DSecureId'),
-            /*'3DSecure' => [
-                'acsEci' => $tdsResult['acsEci'],
-                'authenticationToken' => $tdsResult['authenticationToken'],
-                'xid' => $tdsResult['xid'],
-                'enrollmentStatus' => $this->getEnrollmentStatus($paymentDO)
-            ]*/
         ];
     }
 }

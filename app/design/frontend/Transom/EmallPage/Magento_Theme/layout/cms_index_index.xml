@@ -4,5 +4,6 @@
     <head>
 		<css src="css/bootstrap.css" />
         <css src="https://unpkg.com/aos@2.3.1/dist/aos.css" src_type="url" />
+        <css src="http://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" src_type="url" />
     </head>
 </page>

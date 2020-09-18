@@ -23,6 +23,11 @@
         {
             return $this->_storeManager->getStore()->getWebsiteId();
         }
+
+        public function getStoreCode()
+        {
+            return $this->_storeManager->getStore()->getCode();
+        }
     
         public function beforeAddProduct(
             \Magento\Quote\Model\Quote $subject,
@@ -30,13 +35,13 @@
             $request = null,
             $processMode = \Magento\Catalog\Model\Product\Type\AbstractType::PROCESS_MODE_FULL
         ) {
-            $websiteId = $this->getWebsiteId();
-            // $this->logger->info("WEBSITE ID " . $websiteId);
-            if($websiteId == "2"){
+            $storeCode = $this->getStoreCode();
+            //  $this->logger->info("WEBSITE ID " . $storeCode);
+            if($storeCode == "sietebarrios_storeview_main"){
                 $productId = $product->getId();
-                // $this->logger->info("Product ID " . $productId);
+                //  $this->logger->info("Product ID " . $productId);
 
-                if($productId == "2070" ){
+                if($productId == "32" ){
 
                     if($request){
                         // $this->logger->info("BUNDLE PRODUCT QTY REQUEST BEFORE: " . $request->getData('qty'));
@@ -62,7 +67,7 @@
 
                 }
 
-                if($productId == "2071"){
+                if($productId == "29"){
 
                     if($request){
                         // $this->logger->info("BUNDLE PRODUCT QTY REQUEST BEFORE: " . $request->getData('qty'));

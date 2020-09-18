@@ -22,58 +22,121 @@ $showHome = $helper->getConfigValue('pixtronsettings/navigation_settings/enable'
 $transomHelper = $this->helper('Transom\Tema\Helper\ShopTransomFunctions');
 ?>
 
+
+
 <nav class="navigation" role="navigation">
-    <ul data-mage-init='{"menu":{"responsive":true, "expanded":true, "position":{"my":"left top","at":"left bottom"}}}'> 
-        <div class="e-topmenu">
-            <!--lOGOTIPO-->
-            <li class="logo-menu">
+    <div class="ell-top-menu"> 
+        <div class="ell-container ell-top-menu-items">
+            <a href="#">Blog</a>
+            <a href="#">Ofertas y Cupones</a>
+            <a href="#">Tiendas Favoritas</a>
+        </div>
+    </div>
+
+    <!-- MENU -->
+    <ul class="menu-movil" data-mage-init='{"menu":{"responsive":true, "expanded":true, "position":{"my":"left top","at":"left bottom"}}}'>     
+        <?php if ($showHome) { ?>
+            <li class = "level0 level-top <?php if ($ishome) { ?> active <?php } ?>">
                 <a class = "level-top" href = "<?php echo $baseUrl; ?>">
-                    <img src="https://emall.com.mx/pub/media/logo/stores/1/logo-emall.png">
-                </a> 
+                    <?php echo __('Home');
+                    ?>
+                </a>
             </li>
+        <?php } ?>
 
-            <!--BARRA DE BÚSQUEDA-->
-            <?php echo $this->getLayout()->createBlock("Magento\Framework\View\Element\Template")->setTemplate("Magento_Search::form.mini.phtml")->toHtml(); ?>
-            
-            <div class="e-topmenu-options">
-                <!--CUENTA-->
-                <li class="level0 level-top">
-                    <a class="level-top" href="#">
-                        <i class="fa fa-user"></i>
-                    </a>
-                    <ul class = "level0 submenu ui-menu ui-widget ui-widget-content ui-corner-all">
-                        <li class = "level1 nav-2-1 category-item first ui-menu-item"><a href="<?php echo $baseUrl; ?>customer/account" class = "ui-corner-all"><span>Mi cuenta</span></a></li>
-                        
-                        <?php if($transomHelper->isLoggedIn()) : ?>
-                            <li class = "level1 nav-2-2 category-item ui-menu-item"><a href="<?php echo $baseUrl; ?>checkout/cart" class = "ui-corner-all"><span>Mi Carrito</span></a></li>
-                            <li class = "level1 nav-2-3 category-item last ui-menu-item"><a href="<?php echo $baseUrl; ?>customer/account/logout" class = "ui-corner-all"><span>Salir</span></a></li>
-                        <?php else: ?>
-                            <li class = "level1 nav-2-2 category-item last ui-menu-item"><a href="<?php echo $baseUrl; ?>checkout/cart" class = "ui-corner-all"><span>Mi Carrito</span></a></li>
-                        <?php endif; ?>
+        <?php /* @escapeNotVerified */ echo $_menu; ?>
 
-                        <?php $_loggedin = $this->helper('Magento\Checkout\Helper\Cart')->getCart()->getCustomerSession()->isLoggedIn(); ?>
+            <!-- MI CUENTA -->
+        <li class="level0 level-top parent">
+            <a class="level-top" href="#">
+                Mi Cuenta
+            </a>
+            <ul class = "level0 submenu ui-menu ui-widget ui-widget-content ui-corner-all">
+                <li class = "level1 nav-2-1 category-item first ui-menu-item"><a href="<?php echo $baseUrl; ?>customer/account" class = "ui-corner-all"><span>Mi cuenta</span></a></li>
+                
+                <?php if($transomHelper->isLoggedIn()) : ?>
+                    <li class = "level1 nav-2-2 category-item ui-menu-item"><a href="<?php echo $baseUrl; ?>checkout/cart" class = "ui-corner-all"><span>Mi Carrito</span></a></li>
+                    <li class = "level1 nav-2-3 category-item last ui-menu-item"><a href="<?php echo $baseUrl; ?>customer/account/logout" class = "ui-corner-all"><span>Salir</span></a></li>
+                <?php else: ?>
+                    <li class = "level1 nav-2-2 category-item last ui-menu-item"><a href="<?php echo $baseUrl; ?>checkout/cart" class = "ui-corner-all"><span>Mi Carrito</span></a></li>
+                <?php endif; ?>
 
-                        <?php if( $_loggedin ) : ?>
+                <?php $_loggedin = $this->helper('Magento\Checkout\Helper\Cart')->getCart()->getCustomerSession()->isLoggedIn(); ?>
 
-                            <li class="header_account_link_list">
-                                <a class= "header_account_link" href="<?php echo $this->getUrl("customer/account/logout");?>"><?php echo __('Cerrar Sesión')?></a>
-                            </li>
+                <?php if( $_loggedin ) : ?>
 
-                        <?php endif; ?>
-                    </ul>
-                </li>
+                    <li class="header_account_link_list">
+                        <a class= "header_account_link" href="<?php echo $this->getUrl("customer/account/logout");?>"><?php echo __('Cerrar Sesión')?></a>
+                    </li>
 
-                <!--CARRITO-->
-                <li class="level0 level-top">
-                    <?php echo $this->getChildHtml('minicart') ?>
-                </li>
-            </div>
-        </div>
-
-
-        <!--NAVEGACIÓN-->
-        <div class="e-navbar">
-            <?php /* @escapeNotVerified */ echo $_menu; ?>
-        </div>
+                <?php endif; ?>
+            </ul>
+        </li>
     </ul>
+    <div class="menu-desktop menu-fixed">
+        <ul data-mage-init='{"menu":{"responsive":true, "expanded":true, "position":{"my":"left top","at":"left bottom"}}}'>  
+            <div class="ell-header">
+                <div class="ell-menu-section ell-logo">
+                    <a class = "level-top" href = "<?php echo $baseUrl; ?>"><img src="http://emall.com.mx/pub/media/logo/stores/1/logo-emall.png"></a> 
+                </div>
+                <div class="ell-menu-section ell-search">
+                    <?php echo $this->getLayout()->createBlock("Magento\Framework\View\Element\Template")->setTemplate("Magento_Search::form.mini.phtml")->toHtml(); ?>
+                </div>
+                <div class="ell-menu-section ell-account">  
+                    <li class="level0 level-top">
+                        <a class="level-top" href="#">
+                            <i class="fa fa-user"></i>
+                        </a>
+                        <ul class = "level0 submenu ui-menu ui-widget ui-widget-content ui-corner-all">
+                            <li class = "level1 nav-2-1 category-item first ui-menu-item"><a href="<?php echo $baseUrl; ?>customer/account" class = "ui-corner-all"><span>Mi cuenta</span></a></li>
+                            
+                            <?php if($transomHelper->isLoggedIn()) : ?>
+                                <li class = "level1 nav-2-2 category-item ui-menu-item"><a href="<?php echo $baseUrl; ?>checkout/cart" class = "ui-corner-all"><span>Mi Carrito</span></a></li>
+                                <li class = "level1 nav-2-3 category-item last ui-menu-item"><a href="<?php echo $baseUrl; ?>customer/account/logout" class = "ui-corner-all"><span>Salir</span></a></li>
+                            <?php else: ?>
+                                <li class = "level1 nav-2-2 category-item last ui-menu-item"><a href="<?php echo $baseUrl; ?>checkout/cart" class = "ui-corner-all"><span>Mi Carrito</span></a></li>
+                            <?php endif; ?>
+
+                            <?php $_loggedin = $this->helper('Magento\Checkout\Helper\Cart')->getCart()->getCustomerSession()->isLoggedIn(); ?>
+
+                            <?php if( $_loggedin ) : ?>
+                                <li class="header_account_link_list">
+                                    <a class= "header_account_link" href="<?php echo $this->getUrl("customer/account/logout");?>"><?php echo __('Cerrar Sesión')?></a>
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    </li>
+                    <li class="level0 level-top">
+                        <?php echo $this->getChildHtml('minicart') ?>
+                    </li>
+                </div>
+            </div>
+            <div class="ell-navbar">
+                <div class="ell-navbar-scroll">
+                    <?php /* @escapeNotVerified */ echo $_menu; ?>
+                </div>
+            </div>   
+        </ul>
+    </div>
 </nav>
+
+
+
+
+<script type="text/javascript">
+    require(['jquery'], function($) {
+        $(document).ready(function(){ 
+    $(window).scroll(function(){ 
+        if ($(this).scrollTop() > 100) { 
+            $('#scroll').fadeIn(); 
+        } else { 
+            $('#scroll').fadeOut(); 
+        } 
+    }); 
+    $('#scroll').click(function(){ 
+        $("html, body").animate({ scrollTop: 0 }, 600); 
+        return false; 
+    }); 
+});  
+    });
+</script>

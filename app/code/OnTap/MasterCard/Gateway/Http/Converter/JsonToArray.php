@@ -1,16 +1,28 @@
 <?php
 /**
- * Copyright (c) 2016. On Tap Networks Limited.
+ * Copyright (c) 2016-2019 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace OnTap\MasterCard\Gateway\Http\Converter;
 
 use Magento\Payment\Gateway\Http\ConverterException;
 use Magento\Payment\Gateway\Http\ConverterInterface;
+use Zend_Json;
+use Zend_Json_Decoder;
+use Zend_Json_Exception;
 
-/**
- * Class JsonToArray
- */
 class JsonToArray implements ConverterInterface
 {
     /**
@@ -19,6 +31,7 @@ class JsonToArray implements ConverterInterface
      * @param mixed $response
      * @return array
      * @throws ConverterException
+     * @throws Zend_Json_Exception
      */
     public function convert($response)
     {
@@ -26,6 +39,6 @@ class JsonToArray implements ConverterInterface
             throw new ConverterException(__('Wrong response type'));
         }
 
-        return \Zend_Json_Decoder::decode($response, \Zend_Json::TYPE_ARRAY);
+        return Zend_Json_Decoder::decode($response, Zend_Json::TYPE_ARRAY);
     }
 }

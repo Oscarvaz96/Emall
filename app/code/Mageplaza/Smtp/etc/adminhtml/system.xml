@@ -31,7 +31,7 @@
                     <label>Enable Mageplaza SMTP</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Mageplaza SMTP is compatible with default Magento SMTP and other email modules.<br />
-                        It helps to reduce abandonment cart with <a href="https://www.mageplaza.com/magento-2-one-step-checkout-extension/" target="_blank">One Step Checkout</a>. Fully compatible with <a href="https://www.mageplaza.com/magento-2-abandoned-cart-email/" target="_blank">Abandoned Cart Email</a>]]>
+                        It helps to reduce abandonment cart with Mageplaza One Step Checkout. Fully compatible with Mageplaza Abandoned Cart Email]]>
                     </comment>
                 </field>
                 <field id="log_email" translate="label comment" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -46,6 +46,14 @@
                     <depends>
                         <field id="log_email">1</field>
                     </depends>
+                </field>
+                <field id="blacklist" translate="label comment" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Blacklist</label>
+                    <comment><![CDATA[Enter the main email pattern format. Separated by line breaks.<br />
+                        For the email having the same pattern format with this main pattern, it can not receive email from the system.<br />
+                        For example: Enter the pattern: /^[0-9][a-z0-9\$\%\&]+@[a-z]+\.[a-z]{2,}$/ means that email format must start with number, the following characters can be normal text, number or special character ($, %, &). The domain after @ with normal-text characters will not receive email from system. For instance: 1abc@example.com</br>
+                        For more details of writing email pattern, please see it <a href=" https://docs.mageplaza.com/smtp-m2/index.html" target="_blank">here</a>.]]>
+                    </comment>
                 </field>
             </group>
             <group id="configuration_option" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -103,6 +111,28 @@
                         <frontend_model>Mageplaza\Smtp\Block\Adminhtml\System\Config\Button</frontend_model>
                     </field>
                 </group>
+            </group>
+            <group id="abandoned_cart" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Email Marketing</label>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Select Yes to enable this feature.</comment>
+                </field>
+                <field id="app_id" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>App ID</label>
+                    <comment><![CDATA[Create API key <a href="https://app.avada.io/manage/keys" target="_blank">here</a>.]]></comment>
+                </field>
+                <field id="secret_key" translate="label comment" type="obscure" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Secret key</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+                <field id="test_connection" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label></label>
+                    <button_label>Test connection</button_label>
+                    <button_url>adminhtml/smtp/testconnection</button_url>
+                    <frontend_model>Mageplaza\Smtp\Block\Adminhtml\System\Config\TestConnection</frontend_model>
+                </field>
             </group>
             <group id="developer" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Developer</label>

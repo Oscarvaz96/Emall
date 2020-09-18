@@ -39,6 +39,12 @@ class ConfigFunctions extends AbstractHelper
          parent::__construct($context);
 
     }
+
+    public function getActivePakke(){
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+        $pakke_active = $this->scopeConfig->getValue('carriers/Pakke/active',\Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $pakke_active;
+    }
   
     public function getApiKey(){
         $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;

@@ -1,23 +1,38 @@
 <?php
 /**
- * Copyright (c) 2016. On Tap Networks Limited.
+ * Copyright (c) 2016-2019 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace OnTap\MasterCard\Gateway\Response;
 
-use Magento\Payment\Gateway\Response\HandlerInterface;
-use Magento\Vault\Model\VaultPaymentInterface;
+use DateInterval;
+use DateTime;
+use DateTimeZone;
+use Exception;
+use InvalidArgumentException;
 use Magento\Payment\Gateway\Helper\SubjectReader;
-use Magento\Vault\Model\CreditCardTokenFactory;
-use Magento\Vault\Api\Data\PaymentTokenInterface;
+use Magento\Payment\Gateway\Response\HandlerInterface;
+use Magento\Payment\Model\InfoInterface;
 use Magento\Sales\Api\Data\OrderPaymentExtensionInterface;
 use Magento\Sales\Api\Data\OrderPaymentExtensionInterfaceFactory;
-use Magento\Payment\Model\InfoInterface;
-use Magento\Payment\Gateway\ConfigInterface;
+use Magento\Vault\Api\Data\PaymentTokenFactoryInterface;
+use Magento\Vault\Api\Data\PaymentTokenInterface;
+use Magento\Vault\Model\VaultPaymentInterface;
+use OnTap\MasterCard\Gateway\Config\ConfigInterface;
+use Zend_Json;
 
-/**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
 class TokenCreateHandler implements HandlerInterface
 {
     /**
@@ -26,7 +41,7 @@ class TokenCreateHandler implements HandlerInterface
     protected $vaultPayment;
 
     /**
-     * @var CreditCardTokenFactory
+     * @var PaymentTokenFactoryInterface
      */
     protected $paymentTokenFactory;
 
@@ -44,20 +59,27 @@ class TokenCreateHandler implements HandlerInterface
      * TokenCreateHandler constructor.
      * @param ConfigInterface $config
      * @param VaultPaymentInterface $vaultPayment
-     * @param CreditCardTokenFactory $paymentTokenFactory
+     * @param PaymentTokenFactoryInterface $paymentTokenFactory
      * @param OrderPaymentExtensionInterfaceFactory $paymentExtensionFactory
      */
     public function __construct(
         ConfigInterface $config,
         VaultPaymentInterface $vaultPayment,
-        CreditCardTokenFactory $paymentTokenFactory,
+        PaymentTokenFactoryInterface $paymentTokenFactory,
         OrderPaymentExtensionInterfaceFactory $paymentExtensionFactory
     ) {
-        // @todo: fetch config generically from payment
         $this->config = $config;
         $this->vaultPayment = $vaultPayment;
         $this->paymentTokenFactory = $paymentTokenFactory;
         $this->paymentExtensionFactory = $paymentExtensionFactory;
+    }
+
+    /**
+     * @return ConfigInterface
+     */
+    protected function getConfig()
+    {
+        return $this->config;
     }
 
     /**
@@ -67,7 +89,7 @@ class TokenCreateHandler implements HandlerInterface
     protected function getToken(array $response)
     {
         if (!isset($response['token'])) {
-            throw new \InvalidArgumentException('Token not present in response');
+            throw new InvalidArgumentException('Token not present in response');
         }
         return $response['token'];
     }
@@ -79,7 +101,7 @@ class TokenCreateHandler implements HandlerInterface
      */
     private function convertDetailsToJSON($details)
     {
-        $json = \Zend_Json::encode($details);
+        $json = Zend_Json::encode($details);
         return $json ? $json : '{}';
     }
 
@@ -89,6 +111,7 @@ class TokenCreateHandler implements HandlerInterface
      * @param array $handlingSubject
      * @param array $response
      * @return void
+     * @throws Exception
      */
     public function handle(array $handlingSubject, array $response)
     {
@@ -98,7 +121,7 @@ class TokenCreateHandler implements HandlerInterface
         $isActiveVaultModule = $this->config->isVaultEnabled();
         if ($isActiveVaultModule) {
             $paymentToken = $this->getPaymentToken($response);
-            if ($paymentToken !== null) {
+            if ($paymentToken->getGatewayToken() !== '') {
                 $extensionAttributes = $this->getExtensionAttributes($paymentInfo);
                 $extensionAttributes->setVaultPaymentToken($paymentToken);
             }
@@ -123,19 +146,23 @@ class TokenCreateHandler implements HandlerInterface
     /**
      * @param array $response
      * @return PaymentTokenInterface
+     * @throws Exception
      */
     protected function getPaymentToken(array $response)
     {
         $token = $this->getToken($response);
+        $paymentToken = $this->paymentTokenFactory->create();
+        $paymentToken->setType(PaymentTokenFactoryInterface::TOKEN_TYPE_CREDIT_CARD);
+
         if (empty($token)) {
-            return null;
+            $paymentToken->setGatewayToken('');
+            return $paymentToken;
         }
 
-        $paymentToken = $this->paymentTokenFactory->create();
         $paymentToken->setGatewayToken($token);
 
         if (!isset($response['sourceOfFunds']['provided']['card'])) {
-            throw new \InvalidArgumentException(__("Card details not provided by tokenization"));
+            throw new InvalidArgumentException(__("Card details not provided by tokenization"));
         }
 
         $m = [];
@@ -160,10 +187,11 @@ class TokenCreateHandler implements HandlerInterface
      * @param string $exprMonth
      * @param string $exprYear
      * @return string
+     * @throws Exception
      */
     private function getExpirationDate($exprMonth, $exprYear)
     {
-        $expDate = new \DateTime(
+        $expDate = new DateTime(
             $exprYear
             . '-'
             . $exprMonth
@@ -171,9 +199,9 @@ class TokenCreateHandler implements HandlerInterface
             . '01'
             . ' '
             . '00:00:00',
-            new \DateTimeZone('UTC')
+            new DateTimeZone('UTC')
         );
-        $expDate->add(new \DateInterval('P1M'));
+        $expDate->add(new DateInterval('P1M'));
         return $expDate->format('Y-m-d 00:00:00');
     }
 

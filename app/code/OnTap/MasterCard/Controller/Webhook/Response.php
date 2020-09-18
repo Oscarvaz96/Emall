@@ -1,27 +1,39 @@
 <?php
 /**
- * Copyright (c) 2016. On Tap Networks Limited.
+ * Copyright (c) 2016-2019 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace OnTap\MasterCard\Controller\Webhook;
 
+use Magento\Framework\Api\FilterBuilder;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\CsrfAwareActionInterface;
+use Magento\Framework\App\Request\InvalidRequestException;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\RawFactory;
-use Magento\Framework\App\Action\Context;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Payment\Gateway\Command\CommandPoolInterface;
+use Magento\Payment\Gateway\Data\PaymentDataObjectFactory;
+use Magento\Payment\Model\InfoInterface;
+use Magento\Payment\Model\Method\LoggerFactory;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Api\TransactionRepositoryInterface;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Api\FilterBuilder;
-use Magento\Payment\Model\Method\LoggerFactory;
-use Magento\Payment\Gateway\Data\PaymentDataObjectFactory;
-use Magento\Payment\Gateway\Command\CommandPoolInterface;
 
-/**
- * Class Response
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
-class Response extends \Magento\Framework\App\Action\Action
+class Response extends \Magento\Framework\App\Action\Action implements CsrfAwareActionInterface
 {
     const X_HEADER_SECRET = 'X-Notification-Secret';
     const X_HEADER_ATTEMPT = 'X-Notification-Attempt';
@@ -91,8 +103,6 @@ class Response extends \Magento\Framework\App\Action\Action
      * @param PaymentDataObjectFactory $paymentDataObjectFactory
      * @param CommandPoolInterface $commandPool
      * @param \OnTap\MasterCard\Gateway\Config\Config[] $configProviders
-     *
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         Context $context,
@@ -158,7 +168,7 @@ class Response extends \Magento\Framework\App\Action\Action
 
         $filters[] = $this->filterBuilder
             ->setField('order_id')
-            ->setValue($order->getEntityId())
+            ->setValue((string) $order->getEntityId())
             ->create();
 
         $searchCriteria = $this->searchCriteriaBuilder
@@ -211,7 +221,6 @@ class Response extends \Magento\Framework\App\Action\Action
      *
      * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
      * @throws \Exception
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function execute()
     {
@@ -247,11 +256,15 @@ class Response extends \Magento\Framework\App\Action\Action
 
             $config = $this->configProviders[$order->getPayment()->getMethod()];
 
-            if ($config->getWebhookSecret() !== $responseSecret) {
+            $storeId = $order->getStoreId();
+
+            if ($config->getWebhookSecret($storeId) !== $responseSecret) {
                 throw new \Exception(__("Authorization failed"));
             }
 
-            $paymentData = $this->paymentDataObjectFactory->create($order->getPayment());
+            /** @var InfoInterface $payment */
+            $payment = $order->getPayment();
+            $paymentData = $this->paymentDataObjectFactory->create($payment);
 
             $this->commandPool
                 ->get($config->getMethod())
@@ -260,7 +273,6 @@ class Response extends \Magento\Framework\App\Action\Action
                     'transaction_id' => $data['transaction']['id'],
                     'order_id' => $data['order']['id']
                 ]);
-
         } catch (\Exception $e) {
             $errorMessage = sprintf(
                 __("MasterCard Payment Gateway Services WebHook Exception: '%s'"),
@@ -285,5 +297,31 @@ class Response extends \Magento\Framework\App\Action\Action
 
         $page->setStatusHeader(200);
         return $page->setContents('');
+    }
+
+    /**
+     * Create exception in case CSRF validation failed.
+     * Return null if default exception will suffice.
+     *
+     * @param RequestInterface $request
+     *
+     * @return InvalidRequestException|null
+     */
+    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
+    {
+        return null;
+    }
+
+    /**
+     * Perform custom request validation.
+     * Return null if default validation is needed.
+     *
+     * @param RequestInterface $request
+     *
+     * @return bool|null
+     */
+    public function validateForCsrf(RequestInterface $request): ?bool
+    {
+        return true;
     }
 }

@@ -44,8 +44,37 @@
 
 @active-nav-indent: 54px;
 .media-width(@extremum, @break) when (@extremum = 'max') and (@break = @screen__m) {
+    .logo {
+        position: relative;
+        z-index: 5;
+        float: initial;
+        max-width: 300px;
+        margin: 0 auto 1rem auto;
+        height: 55px;
+        width: 200px;
+        display: block;
+        text-align: center;
+        img {
+            max-height: 100%;
+            max-width: 100%;
+            display: block;
+            min-height: initial;
+            object-fit: contain;
+            margin: auto;
+        }
+    }
+    .nav-sections-item-title {
+        display: none;
+    }
+    .nav-sections-item-content {
+        padding: 0!important;
+        margin-top: 0!important;
+    }
     .navigation {
         padding: 0;
+        .level0 {
+            background: #edc42e;
+        }
         .parent {
             .level-top {
                 position: relative;
@@ -183,6 +212,7 @@
             .lib-css(box-shadow, @_shadow, 1);
             left: 0;
             z-index: 99;
+            background: #edc42e;
         }
 
         .nav-toggle {
@@ -274,81 +304,12 @@
 
     .lib-main-navigation-desktop();
 
-    .panel.header {
+    .panel.header,
+    .header.content {
+        display: none;
         .links,
         .switcher {
             display: inline-block;
         }
-    }
-}
-/*Custom Nav*/
-@media (min-width: 768px) {
-    .page-header .header.panel {
-        display: none;
-    }
-    .header.content {
-        display: none;
-    }
-}
-.logo-menu {
-    display: none;
-    width: 100px;
-}
-@media (min-width: 768px) {
-    .navigation ul {
-        padding: 0!important;
-        display: flex;
-        flex-wrap: wrap;
-    }
-    .e-topmenu {
-        display: flex;
-        justify-content: space-between;
-        padding: 15px;
-        width: 100%;
-    }
-    .e-topmenu-options{
-        display: flex;
-    }
-    .logo-menu {
-        display: block;
-    }
-    .e-navbar {
-        width: 100%;
-    }
-}
-/*Search*/
-@media (min-width: 768px){
-    .block-search {
-        margin: 8px 0;
-        max-width: 900px;
-        padding-left: 0;
-        width: 100%;
-    }
-    .block-search input {
-        background: #fff;
-        border-color: #d1d1d1;
-        height: 40px;
-        padding-left: 20px;
-        padding-right: 35px;
-        border-radius: 25px;
-        -moz-border-radius: 25px;
-        -webkit-border-radius: 25px;
-    }
-    .block-search .action.search {
-        height: 40px;
-    }
-    .block-search .action.search:before {
-        color: #FF1E83;
-        font-weight: 600;
-    }
-    .block-search input::placeholder { 
-        color: #FF1E83;
-        opacity: 1; 
-    }
-    .block-search input:-ms-input-placeholder { 
-        color: #FF1E83;
-    }
-    .block-search input ::-ms-input-placeholder { 
-        color: #FF1E83;
     }
 }

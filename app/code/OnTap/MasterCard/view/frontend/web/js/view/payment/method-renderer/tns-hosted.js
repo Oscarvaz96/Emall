@@ -1,5 +1,17 @@
 /*
- * Copyright (c) 2016. On Tap Networks Limited.
+ * Copyright (c) 2016-2019 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 /*global define*/
 define(
@@ -11,10 +23,11 @@ define(
         'Magento_Checkout/js/model/full-screen-loader',
         'Magento_Ui/js/modal/alert',
         'OnTap_MasterCard/js/view/payment/hosted-adapter',
+        'Magento_Checkout/js/action/set-payment-information',
         'OnTap_MasterCard/js/action/create-session',
         'mage/translate'
     ],
-    function (Component, $, ko, quote, fullScreenLoader, alert, paymentAdapter, createSessionAction, $t) {
+    function (Component, $, ko, quote, fullScreenLoader, alert, paymentAdapter, setPaymentInformationAction, createSessionAction, $t) {
         'use strict';
 
         return Component.extend({
@@ -77,10 +90,20 @@ define(
                 this.adapterLoaded(true);
             },
 
-            createPaymentSession: function () {
+            savePaymentAndCheckout: function () {
                 this.isPlaceOrderActionAllowed(false);
                 this.buttonTitle(this.buttonTitleDisabled);
 
+                var action = setPaymentInformationAction(this.messageContainer, this.getData());
+
+                $.when(action).fail($.proxy(function () {
+                    this.isPlaceOrderActionAllowed(true);
+                }, this)).done(
+                    this.createPaymentSession.bind(this)
+                );
+            },
+
+            createPaymentSession: function () {
                 var action = createSessionAction(
                     this.getData(),
                     this.messageContainer
@@ -98,7 +121,6 @@ define(
 
                         paymentAdapter.configureApi(
                             config.merchant_username,
-                            quote,
                             session[0],
                             session[1]
                         );
@@ -138,6 +160,7 @@ define(
             completedCallback: function(resultIndicator, sessionVersion) {
                 this.resultIndicator = resultIndicator;
                 this.sessionVersion = sessionVersion;
+                this.isPlaceOrderActionAllowed(true);
                 this.placeOrder();
             },
 

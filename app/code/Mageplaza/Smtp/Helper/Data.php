@@ -103,4 +103,45 @@ class Data extends AbstractData
 
         return $scope;
     }
+
+    /**
+     * @param null $storeId
+     *
+     * @return mixed
+     */
+    public function getBlacklist($storeId = null)
+    {
+        return $this->getConfigGeneral('blacklist', $storeId);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTestEmail()
+    {
+        return $this->_request->getFullActionName() === 'adminhtml_smtp_test';
+    }
+
+    /**
+     * @param string $code
+     * @param null $storeId
+     *
+     * @return mixed
+     */
+    public function getAbandonedCartConfig($code = '', $storeId = null)
+    {
+        $code = ($code !== '') ? '/' . $code : '';
+
+        return $this->getConfigValue(static::CONFIG_MODULE_PATH . '/abandoned_cart' . $code, $storeId);
+    }
+
+    /**
+     * @param null $storeId
+     *
+     * @return bool
+     */
+    public function isEnableAbandonedCart($storeId = null)
+    {
+        return $this->isEnabled($storeId) && $this->getAbandonedCartConfig('enabled');
+    }
 }

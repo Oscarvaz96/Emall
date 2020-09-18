@@ -1,20 +1,28 @@
 <?php
 /**
- * Copyright (c) 2016. On Tap Networks Limited.
+ * Copyright (c) 2016-2019 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace OnTap\MasterCard\Gateway\Http;
 
+use Magento\Payment\Gateway\ConfigInterface;
+use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Payment\Gateway\Http\TransferBuilder;
 use Magento\Payment\Gateway\Http\TransferInterface;
-use Magento\Payment\Gateway\ConfigInterface;
 use OnTap\MasterCard\Gateway\Http\Client\Rest;
-use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 
-/**
- * Class TransferFactory
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
 class TransferFactory implements TransferFactoryInterface
 {
     /**
@@ -46,27 +54,30 @@ class TransferFactory implements TransferFactoryInterface
     }
 
     /**
+     * @param int|null $storeId
      * @return string
      */
-    protected function getMerchantUsername()
+    protected function getMerchantUsername($storeId = null)
     {
-        return 'merchant.' . $this->config->getMerchantId();
+        return 'merchant.' . $this->config->getMerchantId($storeId);
     }
 
     /**
+     * @param null $storeId
      * @return string
      */
-    protected function apiVersionUri()
+    protected function apiVersionUri($storeId = null)
     {
-        return 'version/' . $this->config->getValue('api_version') . '/';
+        return 'version/' . $this->config->getValue('api_version', $storeId) . '/';
     }
 
     /**
+     * @param null $storeId
      * @return string
      */
-    protected function merchantUri()
+    protected function merchantUri($storeId = null)
     {
-        return 'merchant/' . $this->config->getMerchantId() . '/';
+        return 'merchant/' . $this->config->getMerchantId($storeId) . '/';
     }
 
     /**
@@ -80,23 +91,25 @@ class TransferFactory implements TransferFactoryInterface
     }
 
     /**
+     * @param int|null $storeId
      * @return mixed
      */
-    protected function getGatewayUri()
+    protected function getGatewayUri($storeId = null)
     {
-        return $this->config->getApiUrl() . $this->apiVersionUri() . $this->merchantUri();
+        return $this->config->getApiUrl($storeId) . $this->apiVersionUri($storeId) . $this->merchantUri($storeId);
     }
 
     /**
-     * @param PaymentDataObjectInterface|array $payment
+     * @param PaymentDataObjectInterface $payment
      * @return string
      */
     protected function getUri(PaymentDataObjectInterface $payment)
     {
         $orderId = $payment->getOrder()->getOrderIncrementId();
         $txnId = $this->createTxnId($payment);
+        $storeId = $payment->getOrder()->getStoreId();
 
-        return $this->getGatewayUri() . 'order/'.$orderId.'/transaction/'.$txnId;
+        return $this->getGatewayUri($storeId) . 'order/' . $orderId . '/transaction/' . $txnId;
     }
 
     /**
@@ -106,12 +119,14 @@ class TransferFactory implements TransferFactoryInterface
      */
     public function create(array $request, PaymentDataObjectInterface $payment)
     {
+        $storeId = $payment->getOrder()->getStoreId();
+
         return $this->transferBuilder
             ->setMethod($this->httpMethod)
             ->setHeaders(['Content-Type' => 'application/json;charset=UTF-8'])
             ->setBody($request)
-            ->setAuthUsername($this->getMerchantUsername())
-            ->setAuthPassword($this->config->getMerchantPassword())
+            ->setAuthUsername($this->getMerchantUsername($storeId))
+            ->setAuthPassword($this->config->getMerchantPassword($storeId))
             ->setUri($this->getUri($payment))
             ->build();
     }

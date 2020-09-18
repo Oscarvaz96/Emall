@@ -12,6 +12,7 @@ use Transom\Pakke\Helper\ConfigFunctions;
 use Magento\Checkout\Model\Session;
 use Transom\Pakke\Helper\Constants;
 
+
 /**
  * Custom shipping model
  */
@@ -93,44 +94,47 @@ class Carrier extends AbstractCarrier implements CarrierInterface
         if (!$this->getConfigFlag('active')) {
             return false;
         }
-        
-        /** @var \Magento\Shipping\Model\Rate\Result $result */
-        $result = $this->rateResultFactory->create();
+        else{
+             /** @var \Magento\Shipping\Model\Rate\Result $result */
+            $result = $this->rateResultFactory->create();
 
-        /** @var \Magento\Quote\Model\Quote\Address\RateResult\Method $method */
-        $allowedMethods = $this->getAllowedMethods();
-       if(!empty($allowedMethods)){
+            /** @var \Magento\Quote\Model\Quote\Address\RateResult\Method $method */
+            $allowedMethods = $this->getAllowedMethods();
+        if(!empty($allowedMethods)){
 
-        $this->logger->info("DENTRO DE PAKKE CARRIERS");
-           
-        foreach ($allowedMethods as $key) {
-            $method = $this->rateMethodFactory->create();
-            $method->setCarrier($this->_code);
-            $method->setCarrierTitle($key["Courier Code"]." ".$key["Courier Service Id"]);
-            $method->setMethod($key["Courier Service Id"]);
-            $method->setMethodTitle($key["Delivery Days"]);
-            $shippingCost = $key["Total Price"];
-            $method->setPrice($shippingCost);
-            $method->setCost($shippingCost);
-            $result->append($method);
-        }
-
-        return $result;
-       }
-       else{
-        $this->logger->info("DENTRO DE ENVÍO GRATUITO");
-            $method = $this->rateMethodFactory->create();
-            $method->setCarrier($this->_code);
-            $method->setCarrierTitle("Envío gratis");
-            $method->setMethod("Gratuito");
-            $method->setMethodTitle("Gratuito");
-            $shippingCost = 0.0;
-            $method->setPrice($shippingCost);
-            $method->setCost($shippingCost);
-            $result->append($method);
+            $this->logger->info("DENTRO DE PAKKE CARRIERS");
+            
+            foreach ($allowedMethods as $key) {
+                $method = $this->rateMethodFactory->create();
+                $method->setCarrier($this->_code);
+                $method->setCarrierTitle($key["Courier Code"]." ".$key["Courier Service Id"]);
+                $method->setMethod($key["Courier Service Id"]);
+                $method->setMethodTitle($key["Delivery Days"]);
+                $shippingCost = $key["Total Price"];
+                $method->setPrice($shippingCost);
+                $method->setCost($shippingCost);
+                $result->append($method);
+            }
 
             return $result;
-       }
+        }
+            else{
+                $this->logger->info("DENTRO DE ENVÍO GRATUITO");
+                    $method = $this->rateMethodFactory->create();
+                    $method->setCarrier($this->_code);
+                    $method->setCarrierTitle("Envío gratis");
+                    $method->setMethod("Gratuito");
+                    $method->setMethodTitle("Gratuito");
+                    $shippingCost = 0.0;
+                    $method->setPrice($shippingCost);
+                    $method->setCost($shippingCost);
+                    $result->append($method);
+
+                    return $result;
+            }
+        }
+        
+       
   
         
     }
@@ -159,9 +163,10 @@ class Carrier extends AbstractCarrier implements CarrierInterface
         $zipCodeTo_Area = substr($ZipCodeTo, 0, 2);
         $zipCodeFrom_Area = substr($zipCodeFrom, 0, 2);
 
-        
+        $path = 'carriers/Pakke/pakke_envio_local';
+        $value = $this->scopeConfig->getValue($path, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
-        if ($this->getConfigFlag('pakke_envio_local')) {
+        if ($value) {
             $this->logger->info("ENVÍO GRATUITO LOCAL ACTIVADO");
             if($zipCodeTo_Area == $zipCodeFrom_Area){
                 $this->logger->info("DENTRO DE CÓDIGO POSTAL LOCAL");

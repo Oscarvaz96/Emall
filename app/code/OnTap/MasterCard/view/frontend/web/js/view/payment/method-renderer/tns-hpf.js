@@ -1,5 +1,17 @@
 /*
- * Copyright (c) 2016. On Tap Networks Limited.
+ * Copyright (c) 2016-2019 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 /*global define*/
 define(
@@ -7,15 +19,13 @@ define(
         'jquery',
         'Magento_Checkout/js/view/payment/default',
         'Magento_Checkout/js/model/payment/additional-validators',
-        'OnTap_MasterCard/js/view/payment/hpf-adapter',
-        'Magento_Ui/js/modal/alert',
         'mage/translate',
         'Magento_Checkout/js/action/set-payment-information',
         'uiLayout',
         'Magento_Checkout/js/model/full-screen-loader',
         'Magento_Vault/js/view/payment/vault-enabler'
     ],
-    function ($, ccFormComponent, additionalValidators, paymentAdapter, alert, $t, setPaymentInformationAction, layout, fullScreenLoader, VaultEnabler) {
+    function ($, ccFormComponent, additionalValidators, $t, setPaymentInformationAction, layout, fullScreenLoader, VaultEnabler) {
         'use strict';
 
         return ccFormComponent.extend({
@@ -35,7 +45,6 @@ define(
             placeOrderHandler: null,
             validateHandler: null,
             sessionId: null,
-            inPayment: false,
 
             initialize: function () {
                 this._super();
@@ -43,6 +52,10 @@ define(
                 this.vaultEnabler.setPaymentCode(this.getVaultCode());
 
                 return this;
+            },
+
+            getId: function () {
+                return this.index;
             },
 
             getVaultCode: function () {
@@ -66,7 +79,6 @@ define(
                 this.buttonTitle(this.buttonTitleDisabled);
                 this.isPlaceOrderActionAllowed.subscribe(function (allowed) {
                     if (allowed === true && this.isActive()) {
-                        this.inPayment = false;
                         this.buttonTitle(this.buttonTitleEnabled);
                     }
                 }, this);
@@ -150,22 +162,73 @@ define(
 
             loadAdapter: function () {
                 var config = this.getConfig();
-
-                paymentAdapter.loadApi(
-                    this.getCardFields(),
-                    config.component_url,
-                    config.merchant_username,
-                    $.proxy(this.paymentAdapterLoaded, this),
-                    config.debug
-                );
+                require([config.component_url], this.paymentAdapterLoaded.bind(this));
             },
 
             isCheckoutDisabled: function () {
                 return !this.adapterLoaded() || !this.isPlaceOrderActionAllowed();
             },
 
-            paymentAdapterLoaded: function (adapter) {
-                this.adapterLoaded(true);
+            paymentAdapterLoaded: function () {
+                this.isPlaceOrderActionAllowed(false);
+                this.buttonTitle(this.buttonTitleDisabled);
+
+                PaymentSession.configure({
+                    fields: this.getCardFields(),
+                    frameEmbeddingMitigation: ['x-frame-options'],
+                    callbacks: {
+                        initialized: function () {
+                            this.adapterLoaded(true);
+                            this.isPlaceOrderActionAllowed(true);
+                        }.bind(this),
+                        formSessionUpdate: this.formSessionUpdate.bind(this)
+                    }
+                }, this.getId());
+            },
+
+            formSessionUpdate: function (response) {
+                var fields = this.getCardFields();
+                for (var field in fields.card) {
+                    if (!fields.card.hasOwnProperty(field)) {
+                        continue;
+                    }
+                    $(fields.card[field] + '-error').hide();
+                }
+
+                if (response.status === "fields_in_error") {
+                    if (response.errors) {
+                        var errors = this.errorMap();
+                        for (var err in response.errors) {
+                            if (!response.errors.hasOwnProperty(err)) {
+                                continue;
+                            }
+                            var message = errors[err],
+                                elem_id = fields.card[err] + '-error';
+
+                            $(elem_id).text(message).show();
+                        }
+                        fullScreenLoader.stopLoader();
+                    }
+                }
+                if (response.status === "ok") {
+                    this.sessionId = response.session.id;
+                    if (this.is3DsEnabled()) {
+                        var action = setPaymentInformationAction(this.messageContainer, this.getData());
+
+                        $.when(action).done($.proxy(function() {
+                            this.delegate('threeDSecureOpen', this);
+                        }, this)).fail(
+                            $.proxy(this.threeDSecureCheckFailed, this)
+                        );
+                    } else {
+                        this.isPlaceOrderActionAllowed(true);
+                        this.placeOrder();
+                    }
+                }
+            },
+
+            savePayment: function () {
+                PaymentSession.updateSessionFromForm('card', undefined, this.getId());
             },
 
             errorMap: function () {
@@ -191,6 +254,7 @@ define(
             getCardFields: function () {
                 return {
                     card: {
+                        cardNumber: "#tns_hpf_cc_number",
                         number: "#tns_hpf_cc_number",
                         expiryMonth: "#tns_hpf_expiration",
                         expiryYear: "#tns_hpf_expiration_yr",
@@ -231,64 +295,18 @@ define(
             },
 
             threeDSecureCheckSuccess: function () {
+                this.isPlaceOrderActionAllowed(true);
                 this.placeOrder();
             },
 
             threeDSecureCheckFailed: function () {
+                console.error('3DS check failed', arguments);
                 fullScreenLoader.stopLoader();
                 this.isPlaceOrderActionAllowed(true);
             },
 
             threeDSecureCancelled: function () {
                 this.isPlaceOrderActionAllowed(true);
-            },
-
-            startHpfSession: function () {
-                this.isPlaceOrderActionAllowed(false);
-                this.buttonTitle(this.buttonTitleDisabled);
-                this.inPayment = false;
-
-                paymentAdapter.startSession($.proxy(function(response) {
-                    if (this.inPayment === true) {
-                        console.info("Duplicate response from session.updateSessionFromForm");
-                        return;
-                    }
-                    this.inPayment = true;
-
-                    if (response.status === "fields_in_error") {
-                        if (response.errors) {
-                            var errors = this.errorMap(),
-                                message = "";
-                            for (var err in response.errors) {
-                                if (!response.errors.hasOwnProperty(err)) {
-                                    continue;
-                                }
-                                message += '<p>' + errors[err] + '</p>';
-                            }
-                            alert({
-                                content: message,
-                                closed: $.proxy(function () {
-                                    this.isPlaceOrderActionAllowed(true);
-                                }, this)
-                            });
-                            fullScreenLoader.stopLoader();
-                        }
-                    }
-                    if (response.status === "ok") {
-                        this.sessionId = response.session.id;
-                        if (this.is3DsEnabled()) {
-                            var action = setPaymentInformationAction(this.messageContainer, this.getData());
-
-                            $.when(action).done($.proxy(function() {
-                                this.delegate('threeDSecureOpen', this);
-                            }, this)).fail(
-                                $.proxy(this.threeDSecureCheckFailed, this)
-                            );
-                        } else {
-                            this.placeOrder();
-                        }
-                    }
-                }, this));
             }
         });
     }

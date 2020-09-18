@@ -1,16 +1,26 @@
 <?php
 /**
- * Copyright (c) 2016. On Tap Networks Limited.
+ * Copyright (c) 2016-2019 Mastercard
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace OnTap\MasterCard\Gateway\Config;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\UrlInterface;
-use Magento\Store\Model\StoreManagerInterface;
 use Magento\Payment\Helper\Data;
-use Magento\Framework\App\ObjectManager;
-use OnTap\MasterCard\Model\Ui\Direct\ConfigProvider;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Config extends \Magento\Payment\Gateway\Config\Config
 {
@@ -40,7 +50,7 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     /**
      * @var string
      */
-    protected $method = 'tns_direct';
+    protected $method;
 
     /**
      * Config constructor.
@@ -71,61 +81,35 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     }
 
     /**
-     * @return bool
-     */
-    public function isVaultEnabled()
-    {
-        $storeId = $this->storeManager->getStore()->getId();
-        $vaultPayment = $this->getVaultPayment();
-        return $vaultPayment->isActive($storeId);
-    }
-
-    /**
-     * @return \Magento\Payment\Model\MethodInterface
-     */
-    protected function getVaultPayment()
-    {
-        return $this->getPaymentDataHelper()->getMethodInstance(ConfigProvider::CC_VAULT_CODE);
-    }
-
-    /**
-     * @return Data
-     */
-    protected function getPaymentDataHelper()
-    {
-        if ($this->paymentDataHelper === null) {
-            $this->paymentDataHelper = ObjectManager::getInstance()->get(Data::class);
-        }
-        return $this->paymentDataHelper;
-    }
-
-    /**
+     * @param null $storeId
      * @return string
      */
-    public function getMerchantId()
+    public function getMerchantId($storeId = null)
     {
-        if ((bool) $this->getValue('test')) {
-            return static::TEST_PREFIX . $this->getValue('api_username');
+        if ((bool) $this->getValue('test', $storeId)) {
+            return static::TEST_PREFIX . $this->getValue('api_username', $storeId);
         } else {
-            return $this->getValue('api_username');
+            return $this->getValue('api_username', $storeId);
         }
     }
 
     /**
+     * @param null $storeId
      * @return string
      */
-    public function getMerchantPassword()
+    public function getMerchantPassword($storeId = null)
     {
-        return $this->getValue('api_password');
+        return $this->getValue('api_password', $storeId);
     }
 
     /**
+     * @param null $storeId
      * @return string
      */
-    public function getApiAreaUrl()
+    public function getApiAreaUrl($storeId = null)
     {
-        if ($this->getValue('api_gateway') == self::API_OTHER) {
-            $url = $this->getValue('api_gateway_other');
+        if ($this->getValue('api_gateway', $storeId) == self::API_OTHER) {
+            $url = $this->getValue('api_gateway_other', $storeId);
             if (empty($url)) {
                 return '';
             }
@@ -134,36 +118,48 @@ class Config extends \Magento\Payment\Gateway\Config\Config
             }
             return $url;
         }
-        return $this->getValue($this->getValue('api_gateway'));
+        return $this->getValue($this->getValue('api_gateway', $storeId), $storeId);
     }
 
     /**
+     * @param null $storeId
      * @return string
      */
-    public function getApiUrl()
+    public function getApiUrl($storeId = null)
     {
-        return $this->getApiAreaUrl() . 'api/rest/';
+        return $this->getApiAreaUrl($storeId) . 'api/rest/';
     }
 
     /**
+     * @param null $storeId
      * @return string
      */
-    public function getWebhookSecret()
+    public function getWebhookSecret($storeId = null)
     {
-        return $this->getValue('webhook_secret');
+        return $this->getValue('webhook_secret', $storeId);
     }
 
     /**
+     * @param null|int $storeId
      * @return mixed|null|string
      */
-    public function getWebhookNotificationUrl()
+    public function getWebhookNotificationUrl($storeId = null)
     {
-        if ($this->getWebhookSecret() && $this->getWebhookSecret() === "") {
+        if ($this->getWebhookSecret($storeId) && $this->getWebhookSecret($storeId) === "") {
             return null;
         }
-        if ($this->getValue('webhook_url') && $this->getValue('webhook_url') !== "") {
-            return $this->getValue('webhook_url');
+        if ($this->getValue('webhook_url', $storeId) && $this->getValue('webhook_url', $storeId) !== "") {
+            return $this->getValue('webhook_url', $storeId);
         }
         return $this->urlBuilder->getUrl(static::WEB_HOOK_RESPONSE_URL, ['_secure' => true]);
+    }
+
+    /**
+     * @param int|null $storeId
+     * @return bool
+     */
+    public function isSendLineItems($storeId = null)
+    {
+        return (bool) $this->getValue('send_line_items', $storeId);
     }
 }
