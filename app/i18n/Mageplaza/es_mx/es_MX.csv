@@ -1377,7 +1377,6 @@ Manually,Manualmente,module,Magento_CheckoutAgreements
 "Unable to save checkout agreement %1","No es posible guardar el acuerdo de pedido %1",module,Magento_CheckoutAgreements
 "Unable to remove checkout agreement %1","No es posible remover el acuerdo de pedido %1",module,Magento_CheckoutAgreements
 "Checkout agreement with specified ID ""%1"" not found.","No se encuentra el acuerdo de pedido con el ID ""%1"".",module,Magento_CheckoutAgreements
-"Are you sure you would like to remove this item from the shopping cart?","le gustaría quitar este producto de su carrito de compras?",module,Magento_Checkout
 "Shopping Cart","Carrito de Compras",module,Magento_Checkout
 "Invalid method: %1","Método no válido: %1",module,Magento_Checkout
 City,Ciudad,module,Magento_Checkout

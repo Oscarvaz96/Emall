@@ -22,20 +22,20 @@ h4 {
   line-height: 1.2;
   margin: 1rem 0;
 }
-h1 {
+/*h1 {
   font-size: 5rem;
-}
-h2 {
+}*/
+.cms-home h2 {
   font-size: 4.8rem;
 }
-h3 {
+.cms-home h3 {
   font-size: 3.4rem;
     text-transform: uppercase!important;
     font-weight: 600!important;
     letter-spacing: 2px;
     color: #0B8CAC;
 }
-h4 {
+.cms-home h4 {
   font-size: 2.4rem;
 }
 
@@ -2559,6 +2559,288 @@ fieldset[disabled] .block-search .action.search {
 /*ordenar*/
 .menu-desktop {
     display: none;
+}
+.breadcrumbs .item:not(:last-child):after {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: initial !important;
+}
+.breadcrumbs .items {
+    font-size: 1.5rem !important;
+}
+.breadcrumbs a:hover {
+    color: #0e6253 !important;
+    text-decoration: none !important;
+}
+.page-footer .footer-top .footer-newsletter {
+    display: none !important;
+}
+.page-footer .footer-bottom {
+    padding-bottom: 10px !important;
+}
+#whatsappchat {
+    display:none;
+}
+.cms-landingpage #whatsappchat {
+    display:block;
+}
+#whatsappchat a {
+    align-items: center;
+    background-color: #7d29c8;
+    background-image: linear-gradient(to right,#7d29c8 0,#9b007e 50%,#7d29c8 100%);
+    background-size: 200% 100%;
+    border-radius: 50px;
+    box-shadow: 0 3px 10px 0 #969696;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    float: right;
+    height: 50px;
+    justify-content: flex-end;
+    max-width: initial;
+    min-width: 50px!important;
+    text-align: center;
+    -webkit-transition: All .5s ease;
+    -moz-transition: All .5s ease;
+    -o-transition: All .5s ease;
+    -ms-transition: All .5s ease;
+    transition: All .5s ease;
+    position: fixed;
+    z-index: 9999;
+}
+#whatsappchat a.bottom-right {
+    bottom: 15px !important;
+    right: 5px !important;
+}
+#whatsappchat a.bottom-right img {
+    width: 40px;
+    z-index: 9999;
+    position: relative;
+    float: right;
+    right: 5px;
+}
+a.btn-web.bottom-right:before {
+    content: "";
+    transition: All .2s ease;
+}
+#whatsappchat a:hover {
+    background-position: 100% 0;
+}
+#whatsappchat a:hover::before {
+    content: "contáctanos";
+    font-size: 20px;
+    padding: 10px 10px 10px 20px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+
+/*Form*/
+@media only screen and (max-width: 767px) {
+    form.ell-form-register {
+        font-size: 15px;
+    }
+}
+form.ell-form-register .fieldset {
+    margin: 0 0 1rem;
+}
+fieldset.fieldset-border {
+    border: 1px solid #d4d4d4;
+    padding: 5px 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+@media only screen and (min-width: 768px) {
+    fieldset.fieldset-border {
+        padding: 5px 30px;
+    }
+}
+.fieldset-noborder {
+    padding: 0 10px;
+}
+@media only screen and (min-width: 768px) {
+    .fieldset-noborder {
+        padding: 0 0 0 30px;
+    }
+}
+fieldset.fieldset-border > legend {
+    display: initial;
+    width: auto;
+    padding: 0 15px;
+    border: 1px solid #d4d4d4;
+    border-radius: 50px;
+    margin-left: initial;
+}
+@media only screen and (min-width: 768px) {
+    fieldset.fieldset-border > legend {
+        margin-left: -15px;
+    }
+}
+.field {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+label.label {
+    text-align: right;
+    display: flex;
+    justify-content: right;
+    min-width: 200px;
+    align-items: initial;
+    margin-bottom: 0;
+}
+@media only screen and (min-width: 768px) {
+    label.label {
+        margin-bottom: 10px;
+    }
+}
+.required label.label span:after {
+    content: "*";
+    color: #cc0000;
+}
+.control {
+    margin-bottom: 10px;
+    min-width: 100%;
+}
+@media only screen and (min-width: 768px) {
+    .control {
+        min-width: ~"calc(100% - 210px)";
+    }
+}
+.ell-form-register input[type="text"], 
+.ell-form-register input[type="password"], 
+.ell-form-register input[type="url"], 
+.ell-form-register input[type="tel"], 
+.ell-form-register input[type="search"], 
+.ell-form-register input[type="number"], 
+.ell-form-register input[type="datetime"], 
+.ell-form-register input[type="email"],
+.ell-form-register select {
+    border-radius: 50px!important;
+    /*border: 1px solid #818181;*/
+    padding: 0 15px;
+    
+}
+.ell-form-register  .fieldset>.legend {
+    margin: 0;
+    padding: 0 0 1rem;
+}
+.ell-form-register  .fieldset>.legend h2{
+    margin: 0 0 1rem;
+    padding-left: 30px;
+    position: relative;
+}
+.ell-form-register .fieldset>.legend h2:before {
+    content: "";
+    display: block;
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    left: 0;
+    background: rebeccapurple;
+    border-radius: 50px;
+    margin-top: 6px;
+}
+._keyfocus *:focus, 
+input:not([disabled]):focus, 
+textarea:not([disabled]):focus, 
+select:not([disabled]):focus {
+    box-shadow: initial;
+}
+.ell-form-register .actions-toolbar {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: start;
+}
+.ell-form-register button {
+    background: #fff !important;
+    border: initial !important;
+    color: #343a40 !important;
+    font-weight: 500 !important;
+    text-transform: capitalize !important;
+    outline: initial;
+    font-size: 13px!important;
+    padding: 10px 0!important;
+    margin: 0!important;
+}
+.ell-form-register button:hover {
+    background: #fff !important;
+    border: initial !important;
+    color: #eb580b !important;
+    font-weight: 500 !important;
+    text-transform: capitalize !important;
+    outline: initial;
+}
+.ell-form-register button:active {
+    box-shadow: initial;
+}
+.ell-form-register .field-error, 
+.ell-form-register div.mage-error[generated] {
+    margin-top: 0;
+    font-size: 10px;
+    padding-left: 0px;
+    width: 100%;
+}
+.ell-form-register button i {
+    width: 100%;
+    font-size: 25px;
+}
+.ell-cpp-form {
+    font-size: 13px;
+    text-align: center;
+}
+.ell-msg-ty {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    align-items: center;
+}
+.ell-msg-ty h3 {
+    color: #eb580b;
+    font-weight: 600;
+    font-size: 30px;
+    margin: 3rem 0 3.5rem 0;
+}
+.ell-color-orange {
+    color: #eb580b;
+    font-weight: 600;
+    font-size: 30px;
+    text-align: center;  
+}
+.primary.ell-form-bts {
+    text-align: center!important;
+    width: 100%!important;
+}
+.primary.ell-btn-bg {
+    border-radius: 50px;
+    color: #FFFFFE!important;
+    background-color: #7d29c8!important;
+    background-image: linear-gradient(to right,#7d29c8 0,#9b007e 50%,#7d29c8 100%)!important;
+    background-size: 200% 100%!important;
+    font-size: 20px!important;
+    padding: 10px!important;
+    text-transform: uppercase!important;
+    font-weight: 600!important;
+    min-width: 250px;
+    box-shadow: 0 3px 10px 0 #969696;
+    float: none;
+    margin: 10px auto 20px !important;
+}
+.primary.ell-btn-bg:hover {
+    background-image: linear-gradient(to right,#7d29c8 0,#9b007e 50%,#7d29c8 100%)!important;
+    background-color: #7d29c8!important;
+    background-position: 100% 0!important;
+    font-weight: 600!important;
+    font-size: 20px!important;
+    padding: 10px!important;
+    text-transform: uppercase!important;
+    color: #FFFFFE!important;
+}
+#myModal2 .ell-modal-content,
+.ell-thank-you .ell-modal-content {
+    border: 5px solid #FFDD30!important;
 }
 @import '_slider.less';
 @import '_announcements.less';

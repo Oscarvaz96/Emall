@@ -1,0 +1,23 @@
+<!--@subject {{trans "El cliente %customer_name ha solicitado información"  customer_name=$name}} @-->
+<!--@vars {
+"var store.getFrontendName()":"Store Name",
+"var customer.name":"Customer Name",
+"var administrator_name":"Administrator Name"
+} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<p class="greeting"><b>{{trans "Hola administrador"}}</b></p>
+<p>Un cliente ha solicitado información</p>
+<h3>Información del cliente:</h3>
+<br>
+<p>{{trans 'Formulario: %form ' form=$form_type|row}}</p>
+<p>{{trans 'Nombre: %customer_name ' customer_name=$customer_name|row}}</p>
+<p>{{trans 'Nombre del negocio: %customer_business ' customer_business=$business|row}}</p>
+<p>{{trans 'Teléfono: %customer_phone ' customer_phone=$phone_number|row}}</p>
+<p>{{trans 'Correo: %customer_email ' customer_email=$email|row}}</p>
+<p>{{trans 'Número de empleados: %employees_amount ' employees_amount=$employees_amount|row}}</p>
+
+
+
+{{template config_path="design/email/footer_template"}}

@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="Transom_Emall_Store_Owner" label="Form Store Owner" file="store_owner_form.html" type="html" module="Transom_Emall" area="frontend"/>
+     <template id="Transom_Emall_Store_Owner_B" label="Form Store Owner" file="store_owner_form_b.html" type="html" module="Transom_Emall" area="frontend"/>
+</config>

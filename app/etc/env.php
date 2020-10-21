@@ -1,17 +1,17 @@
 <?php
 return [
     'backend' => [
-        'frontName' => 'admin_1uevgv'
+        'frontName' => 'admin_1rqab9'
     ],
     'crypt' => [
-        'key' => 'c65aadab38a1931f151bf245d04d05f1'
+        'key' => '4d2572284fb0f667b22ac5e45bf364ce'
     ],
     'db' => [
         'table_prefix' => '',
         'connection' => [
             'default' => [
                 'host' => 'localhost',
-                'dbname' => 'emall_prod2',
+                'dbname' => 'emall_prod',
                 'username' => 'magento',
                 'password' => 'M4gent0Us3r%6',
                 'active' => '1'
@@ -28,6 +28,16 @@ return [
     'session' => [
         'save' => 'files'
     ],
+    'cache' => [
+        'frontend' => [
+            'default' => [
+                'id_prefix' => '11c_'
+            ],
+            'page_cache' => [
+                'id_prefix' => '11c_'
+            ]
+        ]
+    ],
     'cache_types' => [
         'config' => 1,
         'layout' => 1,
@@ -35,6 +45,7 @@ return [
         'collections' => 1,
         'reflection' => 1,
         'db_ddl' => 1,
+        'compiled_config' => 1,
         'eav' => 1,
         'customer_notification' => 1,
         'config_integration' => 1,
@@ -42,10 +53,9 @@ return [
         'full_page' => 1,
         'config_webservice' => 1,
         'translate' => 1,
-        'vertex' => 1,
-        'compiled_config' => 1
+        'vertex' => 1
     ],
     'install' => [
-        'date' => 'Tue, 02 Jun 2020 23:33:51 +0000'
+        'date' => 'Fri, 26 Jun 2020 17:52:00 +0000'
     ]
 ];

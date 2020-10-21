@@ -1,0 +1,164 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+/** @var \Magento\Contact\Block\ContactForm $block */
+?>
+<form class="form contact store-owner-form ell-form-register"
+      action="<?= $block->getUrl('storeowner/Index/SendStoreOwnerForm'); ?>"
+      id="contact-form"
+      method="post"
+      data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"
+      data-mage-init='{"validation":{}}'
+      onsubmit="showHide()">
+    <fieldset class="fieldset">
+        <legend class="legend"><h2><?= $block->escapeHtml(__('¡Quiero subir mi negocio a la Tienda Virtual!')) ?></h2></legend><br />
+        <fieldset class="fieldset-noborder">
+            <div class="field name required">
+            <input type="hidden" name="form_type" id="form_type" value="A"/>
+                <label class="label" for="name"><span><?= $block->escapeHtml(__('Nombre Completo')) ?></span></label>
+                <div class="control">
+                    <input name="name" id="name" title="<?= $block->escapeHtmlAttr(__('Nombre Completo')) ?>" value="" class="input-text" type="text" data-validate="{required:true}"/>
+                </div>
+            </div>
+
+            <div class="field business required">
+                <label class="label" for="business"><span><?= $block->escapeHtml(__('Nombre del Negocio')) ?></span></label>
+                <div class="control">
+                    <input name="business" id="business" title="<?= $block->escapeHtmlAttr(__('Nombre del Negocio')) ?>" value="" class="input-text" type="text" data-validate="{required:true}"/>
+                </div>
+            </div>
+
+            <div class="field business_line">
+                <label class="label" for="business_line"><span><?= $block->escapeHtml(__('Giro del Negocio')) ?></span></label>
+                <div class="control">
+                    <select name = "business_line">
+                        <option value="Alimentación/bebidas ">Alimentación/bebidas </option>
+                        <option value="Arte/ocio">Arte/ocio</option>
+                        <option value="Comercio">Comercio</option>
+                        <option value="Educación">Educación</option>
+                        <option value="Hotelería/ Turismo">Hotelería/ Turismo</option>
+                        <option value="Industria química/minería etc">Industria química/minería etc</option>
+                        <option value="Ingeniería ">Ingeniería </option>
+                        <option value="Servicios Financieros">Servicios Financieros</option>
+                        <option value="Textiles, vestido, cuero, calzado">Textiles, vestido, cuero, calzado</option>
+                        <option value="Salud">Salud</option>
+                        <option value="Cuidado personal y Belleza">Cuidado personal y Belleza</option>
+                        <option value="Tecnología y Apps">Tecnología y Apps</option>
+                        <option value="Transporte">Transporte</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset class="fieldset-border">
+            <legend>
+                <div class="field note no-label"><h3><?= $block->escapeHtml(__('Redes de la Empresa')) ?></h3></div>
+            </legend>
+
+            <div class="field web_address">
+                <label class="label" for="web_address"><span><?= $block->escapeHtml(__('Página WEB')) ?></span></label>
+                <div class="control">
+                    <input name="web_address" id="web_address" title="<?= $block->escapeHtmlAttr(__('Página WEB')) ?>" value="" class="input-text" type="text"/>
+                </div>
+            </div>
+
+            <div class="field facebook">
+                <label class="label" for="facebook"><span><?= $block->escapeHtml(__('Facebook')) ?></span></label>
+                <div class="control">
+                    <input name="facebook" id="facebook" title="<?= $block->escapeHtmlAttr(__('Facebook')) ?>" value="" class="input-text" type="text"/>
+                </div>
+            </div>
+
+            <div class="field instagram">
+                <label class="label" for="instagram"><span><?= $block->escapeHtml(__('Instagram')) ?></span></label>
+                <div class="control">
+                    <input name="instagram" id="instagram" title="<?= $block->escapeHtmlAttr(__('Instagram')) ?>" value="" class="input-text" type="text"/>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset class="fieldset-border">
+            <legend>
+                <div class="field note no-label"><h3><?= $block->escapeHtml(__('Dirección del Negocio')) ?></h3></div>
+            </legend>
+            <!-- Email-->
+            <div class="field email required">
+                <label class="label" for="email"><span><?= $block->escapeHtml(__('Email')) ?></span></label>
+                <div class="control">
+                    <input name="email" id="email" title="<?= $block->escapeHtmlAttr(__('Email')) ?>" value="" class="input-text" type="email" data-validate="{'required':true, 'validate-email':true}"/>
+                </div>
+            </div>
+           
+
+            
+            <div class="field telephone required">
+                <label class="label" for="telephone"><span><?= $block->escapeHtml(__('Phone Number')) ?></span></label>
+                <div class="control">
+                    <input name="telephone" id="telephone" title="<?= $block->escapeHtmlAttr(__('Phone Number')) ?>" value="" class="input-text" type="text" data-validate="{'required':true, 'validate-10digits-phonenumber':true}"/>
+                </div>
+            </div>
+           
+              <!-- Teléfono de negocio-->
+            
+            <div class="field telephone_business required">
+                <label class="label" for="telephone_business"><span><?= $block->escapeHtml(__('Teléfono de Negocio')) ?></span></label>
+                <div class="control">
+                    <input name="telephone_business" id="telephone_business" title="<?= $block->escapeHtmlAttr(__('Teléfono de Negocio')) ?>" value="" class="input-text" type="text" data-validate="{'validate-10digits-phonenumber':true}"/>
+                </div>
+            </div>
+           
+            
+            <div class="field zip_code required">
+                <label class="label" for="zip_code"><span><?= $block->escapeHtml(__('Código Postal')) ?></span></label>
+                <div class="control">
+                    <input name="zip_code" id="zip_code" title="<?= $block->escapeHtmlAttr(__('Código Postal')) ?>" value="" class="input-text" type="text"  data-validate="{'required':true, 'validate-mx-zipcode':true}" />
+                </div>
+            </div>
+            
+            <div class="field city">
+                <label class="label" for="city"><span><?= $block->escapeHtml(__('Ciudad')) ?></span></label>
+                <div class="control">
+                    <input name="city" id="city" title="<?= $block->escapeHtmlAttr(__('Ciudad')) ?>" value="" class="input-text" type="text" />
+                </div>
+            </div>
+
+            <div class="field suburb">
+                <label class="label" for="suburb"><span><?= $block->escapeHtml(__('Colonia')) ?></span></label>
+                <div class="control">
+                    <input name="suburb" id="suburb" title="<?= $block->escapeHtmlAttr(__('Colonia')) ?>" value="" class="input-text" type="text" />
+                </div>
+            </div>
+            <!-- Estado-->
+            
+            <div class="field state">
+                <label class="label" for="state"><span><?= $block->escapeHtml(__('Estado')) ?></span></label>
+                <div class="control">
+                    <input name="state" id="state" title="<?= $block->escapeHtmlAttr(__('Estado')) ?>" value="" class="input-text" type="text" />
+                </div>
+            </div>
+           
+        </fieldset>
+       
+        <?= $block->getChildHtml('form.additional.info') ?>
+    </fieldset>
+    <div class="actions-toolbar">
+        <div class="primary">
+            <input type="hidden" name="hideit" id="hideit" value="" />
+            <button type="submit" title="<?= $block->escapeHtmlAttr(__('Submit')) ?>" class="action submit primary">
+                <i class="mgz-icon-list-item-icon far mgz-fa-paper-plane"></i>
+                <span><?= $block->escapeHtml(__('Submit')) ?></span>
+            </button>
+        </div>
+    </div>
+    <div>
+        <p class="ell-cpp-form">Para nosotros es muy importante tu privacidad. 
+        Utilizaremos tus datos con fines comerciales en cualquier momento puedes cancelar tu suscripción. 
+        Aquí están nuestros <a href="#">Términos y Condiciones</a> y 
+        <a href="http://emall.com.mx/politicas-privacidad" target="_blank">Política de Privacidad</a>.
+        </p>
+    </div>
+</form>

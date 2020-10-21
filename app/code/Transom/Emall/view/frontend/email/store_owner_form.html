@@ -1,0 +1,35 @@
+<!--@subject {{trans "El cliente %customer_name ha solicitado información"  customer_name=$name}} @-->
+<!--@vars {
+"var store.getFrontendName()":"Store Name",
+"var customer.name":"Customer Name",
+"var administrator_name":"Administrator Name"
+} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<p class="greeting"><b>{{trans "Hola administrador"}}</b></p>
+<p>Un cliente ha solicitado información</p>
+<h3>Información del cliente:</h3>
+<br>
+<p>{{trans 'Formulario: %form ' form=$form_type|row}}</p>
+<p>{{trans 'Nombre: %customer_name ' customer_name=$customer_name|row}}</p>
+<p>{{trans 'Nombre del negocio: %customer_business ' customer_business=$business|row}}</p>
+<p>{{trans 'Giro del negocio: %customer_business_line ' customer_business_line=$business_line|row}}</p>
+<p>{{trans 'Teléfono: %customer_phone ' customer_phone=$phone_number|row}}</p>
+
+
+<h3>Redes sociales</h3>
+<p>{{trans 'Sitio web: %customer_web_address ' customer_web_address=$website_address|row}}</p>
+<p>{{trans 'Facebook: %customer_facebook ' customer_facebook=$facebook|row}}</p>
+<p>{{trans 'Instagram: %customer_instagram ' customer_instagram=$instagram|row}}</p>
+
+<h3>Dirección del negocio</h3>
+<p>{{trans 'Correo: %customer_email ' customer_email=$email|row}}</p>
+<p>{{trans 'Teléfono: %customer_phone_business ' customer_phone_business=$business_phone_number|row}}</p>
+<p>{{trans 'CP: %customer_zip_code ' customer_zip_code=$zip_code|row}}</p>
+<p>{{trans 'Estado: %customer_state ' customer_state=$state|row}}</p>
+<p>{{trans 'Ciudad: %customer_city ' customer_city=$city|row}}</p>
+<p>{{trans 'Colonia: %customer_suburb ' customer_suburb=$suburb|row}}</p>
+<br>
+
+{{template config_path="design/email/footer_template"}}

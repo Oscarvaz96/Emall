@@ -1,0 +1,85 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+/** @var \Magento\Contact\Block\ContactForm $block */
+?>
+<form class="form contact store-owner-form ell-form-register"
+      action="<?= $block->getUrl('storeowner/Index/SendStoreOwnerForm'); ?>"
+      id="contact-form"
+      method="post"
+      data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"
+      data-mage-init='{"validation":{}}'>
+    <fieldset class="fieldset">
+        <legend class="legend"><h3 class="ell-color-orange"><?= $block->escapeHtml(__('Quiero ser parte de eMall')) ?></h3></legend><br />
+        <fieldset class="fieldset-noborder">
+
+            <div class="field name required">
+                <input type="hidden" name="form_type" id="form_type" value="B"/>
+
+                <label class="label" for="name"><span><?= $block->escapeHtml(__('Nombre Completo')) ?></span></label>
+                <div class="control">
+                    <input name="name" id="name" title="<?= $block->escapeHtmlAttr(__('Nombre Completo')) ?>" value="" class="input-text" type="text" data-validate="{required:true}"/>
+                </div>
+            </div>
+
+             <!-- Email-->
+             <div class="field email required">
+                <label class="label" for="email"><span><?= $block->escapeHtml(__('Correo electrónico')) ?></span></label>
+                <div class="control">
+                    <input name="email" id="email" title="<?= $block->escapeHtmlAttr(__('Correo electrónico')) ?>" value="" class="input-text" type="email" data-validate="{'required':true, 'validate-email':true}"/>
+                </div>
+            </div>
+
+            <div class="field telephone required">
+                <label class="label" for="telephone"><span><?= $block->escapeHtml(__('Phone Number')) ?></span></label>
+                <div class="control">
+                    <input name="telephone" id="telephone" title="<?= $block->escapeHtmlAttr(__('Phone Number')) ?>" value="" class="input-text" type="text" data-validate="{'required':true, 'validate-10digits-phonenumber':true}"/>
+                </div>
+            </div>
+
+            <div class="field business required">
+                <label class="label" for="business"><span><?= $block->escapeHtml(__('Nombre del Negocio')) ?></span></label>
+                <div class="control">
+                    <input name="business" id="business" title="<?= $block->escapeHtmlAttr(__('Nombre del Negocio')) ?>" value="" class="input-text" type="text" data-validate="{required:true}"/>
+                </div>
+            </div>
+
+            <div class="field employees_amount">
+                <label class="label" for="employees_amount"><span><?= $block->escapeHtml(__('Número de empleados')) ?></span></label>
+                <div class="control">
+                    <select name = "employees_amount">
+                        <option value="10 - 25 empleados">10 - 25 empleados</option>
+                        <option value="26 - 50 empleados">26 - 50 empleados</option>
+                        <option value="51 - 100 empleados">51 - 100 empleados</option>
+                        <option value="101 - 200 empleados">101 - 200 empleados</option>
+                        <option value="más de 200 empleados">más de 200 empleados</option>
+                    </select>
+                </div>
+            </div>
+        </fieldset>
+        
+        
+
+       
+        <?= $block->getChildHtml('form.additional.info') ?>
+    </fieldset>
+    <div class="actions-toolbar">
+        <div class="primary ell-form-bts">
+            <input type="hidden" name="hideit" id="hideit" value="" />
+            <button type="submit" title="<?= $block->escapeHtmlAttr(__('Submit')) ?>" class="action submit primary ell-btn-bg">
+                <span><?= $block->escapeHtml(__('Submit')) ?></span>
+            </button>
+        </div>
+    </div>
+    <div>
+        <p class="ell-cpp-form">Para nosotros es muy importante tu privacidad. 
+        Utilizaremos tus datos con fines comerciales en cualquier momento puedes cancelar tu suscripción. 
+        Aquí están nuestros <a href="#">Términos y Condiciones</a> y 
+        <a href="http://emall.com.mx/politicas-privacidad" target="_blank">Política de Privacidad</a>.
+        </p>
+    </div>
+</form>
